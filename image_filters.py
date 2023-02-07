@@ -1,4 +1,4 @@
-"""Image Filters v0.2.0"""
+"""Image Filters v0.2.1"""
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from multiprocessing import Pool, cpu_count
@@ -94,10 +94,13 @@ def open_image_button_click():
             messagebox.showerror(
                 "File error", f"The selected file ({file_path}) is not an image.")
         else:
-            # image section count should not be more than the image pixel count
-            image.section_count = cpu_count()
-            image.crop()
+            # CPU count is used to determine the number of sections to split the image into
+            if image.current.width >= cpu_count():
+                image.section_count = cpu_count()
+            else:
+                image.section_count = image.current.width
 
+            image.crop()
             image.resize()
             update_image_label(image.resized)
 
@@ -140,7 +143,7 @@ if __name__ == '__main__':
     # Window
     window = tk.Tk()
     window.minsize(width=960, height=720)
-    window.title("Image Filters v0.2.0")
+    window.title("Image Filters v0.2.1")
 
     # Top frame
     top_frame = tk.Frame(window)
