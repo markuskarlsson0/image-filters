@@ -1,20 +1,16 @@
-"""Image Filters v0.1.0"""
+"""Image Filters v0.2.0"""
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from multiprocessing import Pool, cpu_count
 from PIL import ImageTk
 
 from image import PILImage
+from filters import invert_filter
 
-window = tk.Tk()
-window.minsize(width=960, height=720)
-window.title("Image Filters v0.1.0")
-
-image = PILImage()
-
-def update_image_label(image):
+def update_image_label(new_image):
     """Updates the image label to a new image."""
     global image_tk
-    image_tk = ImageTk.PhotoImage(image)
+    image_tk = ImageTk.PhotoImage(new_image)
     image_label.config(image=image_tk)
 
 def change_filter(event):
@@ -29,7 +25,7 @@ def change_filter(event):
             current_filter = 'grayscale'
             intensity_slider.config(state="disabled")
         case (1,):
-            current_filter = 'invert'
+            current_filter = invert_filter
             intensity_slider.config(state="disabled")
         case (2,):
             current_filter = 'black_and_white'
@@ -57,13 +53,32 @@ def intensity_slider_change(event):
     print('intensity slider ' + event)
 
 def apply_filter_button_click():
-    print('apply filter')
+    """Applies the selected filter to the current image."""
+    with Pool(image.section_count) as pool:
+        image.current_sections = pool.map(current_filter, image.current_sections)
+
+    image.last = image.current
+    image.merge()
+    image.resize()
+    update_image_label(image.resized)
+
+    revert_one_step_button.config(state="active")
+    revert_to_original_button.config(state="active")
 
 def revert_one_step_button_click():
-    print('revert step')
+    """Reverts the current image to the last image."""
+    image.current = image.last
+    image.resize()
+    update_image_label(image.resized)
 
 def revert_to_original_button_click():
-    print('revert original')
+    """Reverts the current image to the original image."""
+    image.current = image.original
+    image.resize()
+    update_image_label(image.resized)
+
+    revert_one_step_button.config(state="disabled")
+    revert_to_original_button.config(state="disabled")
 
 def open_image_button_click():
     """Opens an image and sets it as the current image."""
@@ -79,7 +94,11 @@ def open_image_button_click():
             messagebox.showerror(
                 "File error", f"The selected file ({file_path}) is not an image.")
         else:
-            image.resized = image.resize(image.current)
+            # image section count should not be more than the image pixel count
+            image.section_count = cpu_count()
+            image.crop()
+
+            image.resize()
             update_image_label(image.resized)
 
             save_image_button.config(state="active")
@@ -113,84 +132,94 @@ def save_image_as_button_click():
                                  'The image could not be saved since \
                                      it does not have a valid filename.')
 
-# Top frame
-top_frame = tk.Frame(window)
-top_frame.pack(side="top", fill="both", expand=True)
+if __name__ == '__main__':
+    image = PILImage()
+    image_tk = None
+    current_filter = None
 
-image_label = tk.Label(top_frame)
-image_label.place(relx=0.5, rely=0.5, anchor='center')
+    # Window
+    window = tk.Tk()
+    window.minsize(width=960, height=720)
+    window.title("Image Filters v0.2.0")
 
-# Bottom frame
-bottom_frame = tk.Frame(window)
-bottom_frame.pack(side="bottom", fill="x")
+    # Top frame
+    top_frame = tk.Frame(window)
+    top_frame.pack(side="top", fill="both", expand=True)
 
-# Bottom left frame
-bottom_left_frame = tk.Frame(bottom_frame, height=150)
-bottom_left_frame.pack(side="left", fill="both", expand=True)
+    image_label = tk.Label(top_frame)
+    image_label.place(relx=0.5, rely=0.5, anchor='center')
 
-filter_text = tk.Label(bottom_left_frame, text="Filters (9)")
-filter_text.pack()
+    # Bottom frame
+    bottom_frame = tk.Frame(window)
+    bottom_frame.pack(side="bottom", fill="x")
 
-filter_list = tk.Listbox(bottom_left_frame)
-filter_list.insert(tk.END, "Grayscale")
-filter_list.insert(tk.END, "Invert")
-filter_list.insert(tk.END, "Black and white")
-filter_list.insert(tk.END, "Sepia")
-filter_list.insert(tk.END, "Cold")
-filter_list.insert(tk.END, "Warm")
-filter_list.insert(tk.END, "Colorful")
-filter_list.insert(tk.END, "Lighter (1-10)")
-filter_list.insert(tk.END, "Darker (1-10)")
-filter_list.bind("<<ListboxSelect>>", change_filter)
-filter_list.pack()
-filter_list.config(state="disabled")
+    # Bottom left frame
+    bottom_left_frame = tk.Frame(bottom_frame, height=150)
+    bottom_left_frame.pack(side="left", fill="both", expand=True)
 
-# Bottom center frame
-bottom_center_frame = tk.Frame(bottom_frame, height=150)
-bottom_center_frame.pack(side="left", fill="both", expand=True)
+    filter_text = tk.Label(bottom_left_frame, text="Filters (9)")
+    filter_text.pack()
 
-intensity_text = tk.Label(bottom_center_frame, text="Intensity (1-10)")
-intensity_text.pack()
+    filter_list = tk.Listbox(bottom_left_frame)
+    filter_list.insert(tk.END, "Grayscale")
+    filter_list.insert(tk.END, "Invert")
+    filter_list.insert(tk.END, "Black and white")
+    filter_list.insert(tk.END, "Sepia")
+    filter_list.insert(tk.END, "Cold")
+    filter_list.insert(tk.END, "Warm")
+    filter_list.insert(tk.END, "Colorful")
+    filter_list.insert(tk.END, "Lighter (1-10)")
+    filter_list.insert(tk.END, "Darker (1-10)")
+    filter_list.bind("<<ListboxSelect>>", change_filter)
+    filter_list.pack()
+    filter_list.config(state="disabled")
 
-intensity_slider = tk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
-                            command=intensity_slider_change, state="disabled")
-intensity_slider.place(relx=0.5, rely=0.5, anchor="center")
+    # Bottom center frame
+    bottom_center_frame = tk.Frame(bottom_frame, height=150)
+    bottom_center_frame.pack(side="left", fill="both", expand=True)
 
-# Bottom right frame
-bottom_right_frame = tk.Frame(bottom_frame, height=150)
-bottom_right_frame.pack(side="right", fill="both", expand=True)
+    intensity_text = tk.Label(bottom_center_frame, text="Intensity (1-10)")
+    intensity_text.pack()
 
-options_text = tk.Label(bottom_right_frame, text="Options")
-options_text.pack()
+    intensity_slider = tk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
+                                command=intensity_slider_change, state="disabled")
+    intensity_slider.place(relx=0.5, rely=0.5, anchor="center")
 
-bottom_right_top_frame = tk.Frame(bottom_right_frame)
-bottom_right_top_frame.place(relx=0.15, rely=0.5, anchor="w")
+    # Bottom right frame
+    bottom_right_frame = tk.Frame(bottom_frame, height=150)
+    bottom_right_frame.pack(side="right", fill="both", expand=True)
 
-apply_filter_button = tk.Button(bottom_right_top_frame, text="Apply filter",
-                                command=apply_filter_button_click, state="disabled")
-apply_filter_button.pack()
+    options_text = tk.Label(bottom_right_frame, text="Options")
+    options_text.pack()
 
-revert_one_step_button = tk.Button(bottom_right_top_frame, text="Revert one step",
-                                   command=revert_one_step_button_click, state="disabled")
-revert_one_step_button.pack()
+    bottom_right_top_frame = tk.Frame(bottom_right_frame)
+    bottom_right_top_frame.place(relx=0.15, rely=0.5, anchor="w")
 
-revert_to_original_button = tk.Button(bottom_right_top_frame, text="Revert to original",
-                                      command=revert_to_original_button_click, state="disabled")
-revert_to_original_button.pack()
+    apply_filter_button = tk.Button(bottom_right_top_frame, text="Apply filter",
+                                    command=apply_filter_button_click, state="disabled")
+    apply_filter_button.pack()
 
-bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
-bottom_right_bottom_frame.place(relx=0.85, rely=0.5, anchor="e")
+    revert_one_step_button = tk.Button(bottom_right_top_frame, text="Revert one step",
+                                       command=revert_one_step_button_click, state="disabled")
+    revert_one_step_button.pack()
 
-open_image_button = tk.Button(bottom_right_bottom_frame, text="Open image",
-                              command=open_image_button_click, state="active")
-open_image_button.pack()
+    revert_to_original_button = tk.Button(bottom_right_top_frame, text="Revert to original",
+                                          command=revert_to_original_button_click, state="disabled")
+    revert_to_original_button.pack()
 
-save_image_button = tk.Button(bottom_right_bottom_frame, text="Save image",
-                              command=save_image_button_click, state="disabled")
-save_image_button.pack()
+    bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
+    bottom_right_bottom_frame.place(relx=0.85, rely=0.5, anchor="e")
 
-save_image_as_button = tk.Button(bottom_right_bottom_frame, text="Save image as...",
-                                 command=save_image_as_button_click, state="disabled")
-save_image_as_button.pack()
+    open_image_button = tk.Button(bottom_right_bottom_frame, text="Open image",
+                                  command=open_image_button_click, state="active")
+    open_image_button.pack()
 
-window.mainloop()
+    save_image_button = tk.Button(bottom_right_bottom_frame, text="Save image",
+                                  command=save_image_button_click, state="disabled")
+    save_image_button.pack()
+
+    save_image_as_button = tk.Button(bottom_right_bottom_frame, text="Save image as...",
+                                     command=save_image_as_button_click, state="disabled")
+    save_image_as_button.pack()
+
+    window.mainloop()
