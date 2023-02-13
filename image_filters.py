@@ -148,6 +148,7 @@ if __name__ == '__main__':
     window = tk.Tk()
     window.minsize(width=960, height=720)
     window.title('Image Filters v0.2.1')
+    window.wm_iconphoto(False, tk.PhotoImage(file="icon.png"))
 
     # Top frame
     top_frame = tk.Frame(window)
