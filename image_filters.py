@@ -82,7 +82,7 @@ def revert_to_original_button_click():
 
 def open_image_button_click():
     """Opens an image and sets it as the current image."""
-    file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename(filetypes = (("PNG (transparency support)", "*.png"), ("JPG (no transparency support)", "*.jpg")))
 
     if file_path != '':
         global image
@@ -104,6 +104,7 @@ def open_image_button_click():
             image.resize()
             update_image_label(image.resized)
 
+            window.title(f'Image Filters v0.2.1 • {file_path}')
             save_image_button.config(state="active")
             save_image_as_button.config(state="active")
             filter_list.config(state="normal")
@@ -122,7 +123,10 @@ def save_image_button_click():
 
 def save_image_as_button_click():
     """Saves the image to a new path."""
-    file_path = filedialog.asksaveasfilename()
+    file_path = filedialog.asksaveasfilename(
+        filetypes = (("PNG (transparency support)", "*.png"),
+                     ("JPG (no transparency support)", "*.jpg"),
+                     ("All", "*")), defaultextension='.png')
 
     if file_path != '':
         try:
@@ -143,7 +147,7 @@ if __name__ == '__main__':
     # Window
     window = tk.Tk()
     window.minsize(width=960, height=720)
-    window.title("Image Filters v0.2.1")
+    window.title('Image Filters v0.2.1')
 
     # Top frame
     top_frame = tk.Frame(window)
