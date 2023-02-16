@@ -54,8 +54,12 @@ def intensity_slider_change(event):
 
 def apply_filter_button_click():
     """Applies the selected filter to the current image."""
+    image_sections = []
+    for section in image.current_sections:
+        image_sections.append((section, intensity_slider.get()))
+
     with Pool(image.section_count) as pool:
-        image.current_sections = pool.map(current_filter, image.current_sections)
+        image.current_sections = pool.starmap(current_filter, image_sections)
 
     image.last = image.current
     image.merge()

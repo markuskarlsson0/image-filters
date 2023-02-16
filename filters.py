@@ -1,8 +1,11 @@
 """This module contains the filters that can be applied to an image."""
 from PIL import Image
 
-def invert_filter(current_image):
+def invert_filter(current_image, intensity):
     """Inverts the color channels of an image."""
+    if intensity != 1:
+        return
+
     if current_image.mode == "RGB":
         new_image = Image.new(mode="RGB", size=current_image.size)
 
