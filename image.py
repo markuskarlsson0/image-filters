@@ -57,11 +57,12 @@ class PILImage:
 
         for index in range(0, self.section_count - 1):
             image_sections.append(self.current.crop((image_section_width * index, 0,
-                 image_section_width * (index + 1), self.current.height)))
+                image_section_width * (index + 1), self.current.height)))
 
         image_sections.append(self.current.crop(
             (image_section_width * (self.section_count - 1), 0,
-             self.current.width, self.current.height)))
+            self.current.width, self.current.height)))
+
         self.current_sections = image_sections
 
     def merge(self):
@@ -76,6 +77,6 @@ class PILImage:
 
         current_sections_length = len(self.current_sections) - 1
         new_image.paste(self.current_sections[current_sections_length],
-                        (self.current_sections[0].width * current_sections_length, 0))
+            (self.current_sections[0].width * current_sections_length, 0))
 
         self.current = new_image

@@ -5,7 +5,7 @@ from multiprocessing import Pool, cpu_count
 from PIL import ImageTk
 
 from image import PILImage
-from filters import invert_filter
+from filters import grayscale_filter, invert_filter
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -22,7 +22,7 @@ def change_filter(event):
 
     match event.widget.curselection():
         case (0,):
-            current_filter = 'grayscale'
+            current_filter = grayscale_filter
             intensity_slider.config(state="disabled")
         case (1,):
             current_filter = invert_filter
@@ -72,12 +72,14 @@ def apply_filter_button_click():
 def revert_one_step_button_click():
     """Reverts the current image to the last image."""
     image.current = image.last
+    image.crop()
     image.resize()
     update_image_label(image.resized)
 
 def revert_to_original_button_click():
     """Reverts the current image to the original image."""
     image.current = image.original
+    image.crop()
     image.resize()
     update_image_label(image.resized)
 
@@ -86,7 +88,9 @@ def revert_to_original_button_click():
 
 def open_image_button_click():
     """Opens an image and sets it as the current image."""
-    file_path = filedialog.askopenfilename(filetypes = (("PNG (transparency support)", "*.png"), ("JPG (no transparency support)", "*.jpg")))
+    file_path = filedialog.askopenfilename(filetypes = (
+        ("PNG (transparency support)", "*.png"),
+            ("JPG (no transparency support)", "*.jpg")))
 
     if file_path != '':
         global image
@@ -119,29 +123,29 @@ def save_image_button_click():
         image.save(image.path)
     except IOError:
         messagebox.showerror('Image save error',
-                             f'The image could not be saved at path: {image.path}.')
+            f'The image could not be saved at path: {image.path}.')
     except ValueError:
         messagebox.showerror('Image save error',
-                             'The image could not be saved since \
-                                 it does not have a valid filename.')
+            'The image could not be saved since \
+                it does not have a valid filename.')
 
 def save_image_as_button_click():
     """Saves the image to a new path."""
     file_path = filedialog.asksaveasfilename(
         filetypes = (("PNG (transparency support)", "*.png"),
-                     ("JPG (no transparency support)", "*.jpg"),
-                     ("All", "*")), defaultextension='.png')
+            ("JPG (no transparency support)", "*.jpg"),
+                ("All", "*")), defaultextension='.png')
 
     if file_path != '':
         try:
             image.save(file_path)
         except IOError:
             messagebox.showerror('Image save error',
-                                 f'The image could not be saved at path: {file_path}.')
+                f'The image could not be saved at path: {file_path}.')
         except ValueError:
             messagebox.showerror('Image save error',
-                                 'The image could not be saved since \
-                                     it does not have a valid filename.')
+                'The image could not be saved since \
+                    it does not have a valid filename.')
 
 if __name__ == '__main__':
     image = PILImage()
@@ -194,7 +198,7 @@ if __name__ == '__main__':
     intensity_text.pack()
 
     intensity_slider = tk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
-                                command=intensity_slider_change, state="disabled")
+        command=intensity_slider_change, state="disabled")
     intensity_slider.place(relx=0.5, rely=0.5, anchor="center")
 
     # Bottom right frame
@@ -208,30 +212,30 @@ if __name__ == '__main__':
     bottom_right_top_frame.place(relx=0.15, rely=0.5, anchor="w")
 
     apply_filter_button = tk.Button(bottom_right_top_frame, text="Apply filter",
-                                    command=apply_filter_button_click, state="disabled")
+        command=apply_filter_button_click, state="disabled")
     apply_filter_button.pack()
 
     revert_one_step_button = tk.Button(bottom_right_top_frame, text="Revert one step",
-                                       command=revert_one_step_button_click, state="disabled")
+        command=revert_one_step_button_click, state="disabled")
     revert_one_step_button.pack()
 
     revert_to_original_button = tk.Button(bottom_right_top_frame, text="Revert to original",
-                                          command=revert_to_original_button_click, state="disabled")
+        command=revert_to_original_button_click, state="disabled")
     revert_to_original_button.pack()
 
     bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
     bottom_right_bottom_frame.place(relx=0.85, rely=0.5, anchor="e")
 
     open_image_button = tk.Button(bottom_right_bottom_frame, text="Open image",
-                                  command=open_image_button_click, state="active")
+        command=open_image_button_click, state="active")
     open_image_button.pack()
 
     save_image_button = tk.Button(bottom_right_bottom_frame, text="Save image",
-                                  command=save_image_button_click, state="disabled")
+        command=save_image_button_click, state="disabled")
     save_image_button.pack()
 
     save_image_as_button = tk.Button(bottom_right_bottom_frame, text="Save image as...",
-                                     command=save_image_as_button_click, state="disabled")
+        command=save_image_as_button_click, state="disabled")
     save_image_as_button.pack()
 
     window.mainloop()
