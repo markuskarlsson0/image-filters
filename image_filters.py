@@ -61,7 +61,6 @@ def apply_filter_button_click():
     with Pool(image.section_count) as pool:
         image.current_sections = pool.starmap(current_filter, image_sections)
 
-    image.last = image.current
     image.merge()
     image.resize()
     update_image_label(image.resized)
@@ -71,14 +70,20 @@ def apply_filter_button_click():
 
 def revert_one_step_button_click():
     """Reverts the current image to the last image."""
-    image.current = image.last
-    image.crop()
-    image.resize()
-    update_image_label(image.resized)
+    if len(image.list) >= 1:
+        image.list.pop()
+        image.crop()
+        image.resize()
+        update_image_label(image.resized)
+
+        if len(image.list) == 1:
+            revert_one_step_button.config(state="disabled")
+            revert_to_original_button.config(state="disabled")
 
 def revert_to_original_button_click():
     """Reverts the current image to the original image."""
-    image.current = image.original
+    image.list = [image.list[0]]
+
     image.crop()
     image.resize()
     update_image_label(image.resized)
@@ -103,10 +108,10 @@ def open_image_button_click():
                 "File error", f"The selected file ({file_path}) is not an image.")
         else:
             # CPU count is used to determine the number of sections to split the image into
-            if image.current.width >= cpu_count():
+            if image.list[-1].width >= cpu_count():
                 image.section_count = cpu_count()
             else:
-                image.section_count = image.current.width
+                image.section_count = image.list[-1].width
 
             image.crop()
             image.resize()
