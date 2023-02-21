@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from multiprocessing import Pool, cpu_count
+from threading import Thread
 from PIL import ImageTk
 
 from image import PILImage
@@ -53,6 +54,22 @@ def intensity_slider_change(event):
     print('intensity slider ' + event)
 
 def apply_filter_button_click():
+    """Configures buttons and applies filter in a new thread."""
+    filter_list.config(state="disabled")
+    # intensity_slider.config(state="disabled")
+    apply_filter_button.config(state="disabled")
+    apply_filter_button.config(text="Applying filter...")
+    revert_one_step_button.config(state="disabled")
+    revert_to_original_button.config(state="disabled")
+    open_image_button.config(state="disabled")
+    save_image_button.config(state="disabled")
+    save_image_as_button.config(state="disabled")
+
+    # Runs filter application in a new thread to allow changes to the GUI
+    thread = Thread(target=apply_filter)
+    thread.start()
+
+def apply_filter():
     """Applies the selected filter to the current image."""
     image_sections = []
     for section in image.current_sections:
@@ -65,8 +82,15 @@ def apply_filter_button_click():
     image.resize()
     update_image_label(image.resized)
 
+    filter_list.config(state="normal")
+    # intensity_slider.config(state="normal")
+    apply_filter_button.config(text="Apply filter")
+    apply_filter_button.config(state="active")
     revert_one_step_button.config(state="active")
     revert_to_original_button.config(state="active")
+    open_image_button.config(state="active")
+    save_image_button.config(state="active")
+    save_image_as_button.config(state="active")
 
 def revert_one_step_button_click():
     """Reverts the current image to the last image."""
