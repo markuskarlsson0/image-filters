@@ -7,7 +7,7 @@ from PIL import ImageTk
 
 from image import PILImage
 from filters import (grayscale_filter, invert_filter, black_and_white_filter, sepia_filter,
-    cold_filter, warm_filter, colorful_filter)
+    cold_filter, warm_filter, colorful_filter, lighter_filter)
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -45,14 +45,11 @@ def change_filter(event):
             current_filter = colorful_filter
             intensity_slider.config(state="disabled")
         case (7,):
-            current_filter = 'lighter'
+            current_filter = lighter_filter
             intensity_slider.config(state="active")
         case (8,):
             current_filter = 'darker'
             intensity_slider.config(state="active")
-
-def intensity_slider_change(event):
-    print('intensity slider ' + event)
 
 def apply_filter_button_click():
     """Configures buttons and applies filter in a new thread."""
@@ -228,7 +225,7 @@ if __name__ == '__main__':
     intensity_text.pack()
 
     intensity_slider = tk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
-        command=intensity_slider_change, state="disabled")
+        state="disabled")
     intensity_slider.place(relx=0.5, rely=0.5, anchor="center")
 
     # Bottom right frame

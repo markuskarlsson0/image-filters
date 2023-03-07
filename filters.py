@@ -387,3 +387,57 @@ def colorful_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel, alpha_channel))
 
     return new_image
+
+def lighter_filter(current_image, intensity):
+    """Makes image lighter."""
+    intensity *= 10
+
+    # If RGB image, apply filter to all channels
+    if current_image.mode == "RGB":
+        # Create new RGB image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGB", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                red_channel = int(red_channel + intensity)
+                green_channel = int(green_channel + intensity)
+                blue_channel = int(blue_channel + intensity)
+
+                # Pixel values can't be higher than 255
+                red_channel = min(red_channel, 255)
+                green_channel = min(green_channel, 255)
+                blue_channel = min(blue_channel, 255)
+
+                # Put modified channels into new image
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel))
+
+    # If RGBA image, apply filter to all channels except alpha
+    elif current_image.mode == "RGBA":
+        # Create new RGBA image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGBA", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel, alpha_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                red_channel = int(red_channel + intensity)
+                green_channel = int(green_channel + intensity)
+                blue_channel = int(blue_channel + intensity)
+
+                # Pixel values can't be higher than 255
+                red_channel = min(red_channel, 255)
+                green_channel = min(green_channel, 255)
+                blue_channel = min(blue_channel, 255)
+
+                # Put modified channels into new image except alpha
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel, alpha_channel))
+
+    return new_image
