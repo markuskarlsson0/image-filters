@@ -1,6 +1,6 @@
 """Image Filters v0.3.0"""
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox
 from multiprocessing import Pool, cpu_count
 from threading import Thread
 from PIL import ImageTk
@@ -15,45 +15,51 @@ def update_image_label(new_image):
     image_tk = ImageTk.PhotoImage(new_image)
     image_label.config(image=image_tk)
 
-def change_filter(event):
+def change_filter():
     """Changes the current filter to the selected one in the listbox."""
     global current_filter
 
     intensity_slider.set(1)
     apply_filter_button.config(state="active")
 
-    match event.widget.curselection():
-        case (0,):
+    match filter_list.selection():
+        case ('I001',):
             current_filter = grayscale_filter
             intensity_slider.config(state="disabled")
-        case (1,):
+        case ('I002',):
             current_filter = invert_filter
             intensity_slider.config(state="disabled")
-        case (2,):
+        case ('I003',):
             current_filter = black_and_white_filter
             intensity_slider.config(state="disabled")
-        case (3,):
+        case ('I004',):
             current_filter = sepia_filter
             intensity_slider.config(state="disabled")
-        case (4,):
+        case ('I005',):
             current_filter = cold_filter
             intensity_slider.config(state="disabled")
-        case (5,):
+        case ('I006',):
             current_filter = warm_filter
             intensity_slider.config(state="disabled")
-        case (6,):
+        case ('I007',):
             current_filter = colorful_filter
             intensity_slider.config(state="disabled")
-        case (7,):
+        case ('I008',):
             current_filter = lighter_filter
             intensity_slider.config(state="active")
-        case (8,):
+        case ('I009',):
             current_filter = darker_filter
             intensity_slider.config(state="active")
 
+def change_intensity(event):
+    """Limits the intensity slider to integer values."""
+    value = int(float(event))
+    intensity_slider.config(value=value)
+    intensity_text_value.config(text=value)
+
 def apply_filter_button_click():
     """Configures buttons and applies filter in a new thread."""
-    filter_list.config(state="disabled")
+    filter_list.config(selectmode="none")
     apply_filter_button.config(state="disabled")
     apply_filter_button.config(text="Applying filter...")
     revert_one_step_button.config(state="disabled")
@@ -79,7 +85,7 @@ def apply_filter():
     image.resize()
     update_image_label(image.resized)
 
-    filter_list.config(state="normal")
+    filter_list.config(selectmode="browse")
     apply_filter_button.config(text="Apply filter")
     apply_filter_button.config(state="active")
     revert_one_step_button.config(state="active")
@@ -138,9 +144,10 @@ def open_image_button_click():
             update_image_label(image.resized)
 
             window.title(f'Image Filters v0.3.0 • {file_path}')
+            image_label.place(relx=0.5, rely=0.5, anchor='center')
             save_image_button.config(state="active")
             save_image_as_button.config(state="active")
-            filter_list.config(state="normal")
+            filter_list.config(selectmode="browse")
 
 def save_image_button_click():
     """Saves the image to the path it was opened from."""
@@ -184,83 +191,120 @@ if __name__ == '__main__':
     window.wm_iconphoto(False, tk.PhotoImage(file="icon.png"))
 
     # Top frame
-    top_frame = tk.Frame(window)
+    top_frame = tk.Frame(window, bg="white")
     top_frame.pack(side="top", fill="both", expand=True)
 
-    image_label = tk.Label(top_frame)
-    image_label.place(relx=0.5, rely=0.5, anchor='center')
+    top_frame_separator = ttk.Separator(top_frame, orient='horizontal')
+    top_frame_separator.pack(side="bottom", fill="x")
+
+    image_label = ttk.Label(top_frame, relief="solid")
 
     # Bottom frame
-    bottom_frame = tk.Frame(window)
+    bottom_frame = tk.Frame(window, bg="white")
     bottom_frame.pack(side="bottom", fill="x")
 
     # Bottom left frame
-    bottom_left_frame = tk.Frame(bottom_frame, height=150)
+    bottom_left_frame = tk.Frame(bottom_frame, bg="white")
     bottom_left_frame.pack(side="left", fill="both", expand=True)
 
-    filter_text = tk.Label(bottom_left_frame, text="Filters (9)")
-    filter_text.pack()
+    # filter_text = ttk.Label(bottom_left_frame, text="Filters (9)", background="white")
+    # filter_text.pack()
 
-    filter_list = tk.Listbox(bottom_left_frame)
-    filter_list.insert(tk.END, "Grayscale")
-    filter_list.insert(tk.END, "Invert")
-    filter_list.insert(tk.END, "Black and white")
-    filter_list.insert(tk.END, "Sepia")
-    filter_list.insert(tk.END, "Cold")
-    filter_list.insert(tk.END, "Warm")
-    filter_list.insert(tk.END, "Colorful")
-    filter_list.insert(tk.END, "Lighter (1-10)")
-    filter_list.insert(tk.END, "Darker (1-10)")
-    filter_list.bind("<<ListboxSelect>>", change_filter)
+    filter_list = ttk.Treeview(bottom_left_frame, selectmode="none", height=8)
+    filter_list.heading("#0", text="Filters (9)")
+    filter_list.insert("", "end", text="Grayscale")
+    filter_list.insert("", "end", text="Invert")
+    filter_list.insert("", "end", text="Black and white")
+    filter_list.insert("", "end", text="Sepia")
+    filter_list.insert("", "end", text="Cold")
+    filter_list.insert("", "end", text="Warm")
+    filter_list.insert("", "end", text="Colorful")
+    filter_list.insert("", "end", text="Lighter (1-10)")
+    filter_list.insert("", "end", text="Darker (1-10)")
+    filter_list.bind("<<TreeviewSelect>>", lambda event: change_filter())
+
     filter_list.pack()
-    filter_list.config(state="disabled")
 
     # Bottom center frame
-    bottom_center_frame = tk.Frame(bottom_frame, height=150)
+    bottom_center_frame = tk.Frame(bottom_frame, height=150, bg="white")
     bottom_center_frame.pack(side="left", fill="both", expand=True)
+
+    bottom_center_frame_separator_1 = ttk.Separator(bottom_center_frame, orient='vertical')
+    bottom_center_frame_separator_1.pack(side="left", fill="y")
+
 
     intensity_text = tk.Label(bottom_center_frame, text="Intensity (1-10)")
     intensity_text.pack()
 
-    intensity_slider = tk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
-        state="disabled")
+    intensity_text_value = tk.Label(bottom_center_frame, text="1")
+    intensity_text_value.pack()
+
+    style = ttk.Style()
+    style.configure("TScale", background="white")
+
+    intensity_slider = ttk.Scale(bottom_center_frame, from_=1, to=10, orient="horizontal",
+        state="disabled", value=1, style="TScale", command=change_intensity)
     intensity_slider.place(relx=0.5, rely=0.5, anchor="center")
 
+    bottom_center_frame_separator_2 = ttk.Separator(bottom_center_frame, orient="vertical")
+    bottom_center_frame_separator_2.pack(side="right", fill="y")
+
     # Bottom right frame
-    bottom_right_frame = tk.Frame(bottom_frame, height=150)
+    bottom_right_frame = tk.Frame(bottom_frame)
     bottom_right_frame.pack(side="right", fill="both", expand=True)
 
-    options_text = tk.Label(bottom_right_frame, text="Options")
+    bottom_right_top_frame = tk.Frame(bottom_right_frame, bg="white")
+    bottom_right_top_frame.pack(side="top", fill="both", expand=True)
+
+    bottom_right_bottom_frame = tk.Frame(bottom_right_frame, bg="white")
+    bottom_right_bottom_frame.pack(side="bottom", fill="both")
+
+    options_text = ttk.Label(bottom_right_top_frame, text="Options")
     options_text.pack()
 
-    bottom_right_top_frame = tk.Frame(bottom_right_frame)
-    bottom_right_top_frame.place(relx=0.15, rely=0.5, anchor="w")
+    bottom_right_top_left_frame = tk.Frame(bottom_right_top_frame, bg="white")
+    bottom_right_top_left_frame.place(relx=0.15, rely=0.5, anchor="w")
 
-    apply_filter_button = tk.Button(bottom_right_top_frame, text="Apply filter",
-        command=apply_filter_button_click, state="disabled")
+    style.configure('Custom.TButton', background='white')
+
+    apply_filter_button = ttk.Button(bottom_right_top_left_frame, text="Apply filter",
+        command=apply_filter_button_click, style="Custom.TButton", state="disabled")
     apply_filter_button.pack()
 
-    revert_one_step_button = tk.Button(bottom_right_top_frame, text="Revert one step",
-        command=revert_one_step_button_click, state="disabled")
+    revert_one_step_button = ttk.Button(bottom_right_top_left_frame, text="Revert one step",
+        command=revert_one_step_button_click, style="Custom.TButton", state="disabled")
     revert_one_step_button.pack()
 
-    revert_to_original_button = tk.Button(bottom_right_top_frame, text="Revert to original",
-        command=revert_to_original_button_click, state="disabled")
+    revert_to_original_button = ttk.Button(bottom_right_top_left_frame, text="Revert to original",
+        command=revert_to_original_button_click, style="Custom.TButton", state="disabled")
     revert_to_original_button.pack()
 
-    bottom_right_bottom_frame = tk.Frame(bottom_right_frame)
-    bottom_right_bottom_frame.place(relx=0.85, rely=0.5, anchor="e")
+    bottom_rigth_top_right_frame = tk.Frame(bottom_right_top_frame, bg="white")
+    bottom_rigth_top_right_frame.place(relx=0.85, rely=0.5, anchor="e")
 
-    open_image_button = tk.Button(bottom_right_bottom_frame, text="Open image",
-        command=open_image_button_click, state="active")
+    open_image_button = ttk.Button(bottom_rigth_top_right_frame, text="Open image",
+        command=open_image_button_click, style="Custom.TButton", state="active")
     open_image_button.pack()
 
-    save_image_button = tk.Button(bottom_right_bottom_frame, text="Save image",
-        command=save_image_button_click, state="disabled")
+    save_image_button = ttk.Button(bottom_rigth_top_right_frame, text="Save image",
+        command=save_image_button_click, style="Custom.TButton", state="disabled")
     save_image_button.pack()
 
-    save_image_as_button = tk.Button(bottom_right_bottom_frame, text="Save image as...",
-        command=save_image_as_button_click, state="disabled")
+    save_image_as_button = ttk.Button(bottom_rigth_top_right_frame, text="Save image as...",
+        command=save_image_as_button_click, style="Custom.TButton", state="disabled")
     save_image_as_button.pack()
+
+    options_text = tk.Label(bottom_right_bottom_frame, text="Status")
+    options_text.pack()
+
+    status_bar = ttk.Progressbar(
+        bottom_right_bottom_frame,
+        orient='horizontal',
+        mode='indeterminate',
+        length=100
+
+    )
+
+    status_bar.pack(pady=10)
 
     window.mainloop()
