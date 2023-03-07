@@ -313,3 +313,77 @@ def warm_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel, alpha_channel))
 
     return new_image
+
+def colorful_filter(current_image, intensity):
+    """Makes image colorful."""
+    # This filter does not use the intensity slider
+    if intensity != 1:
+        return False
+
+    # If RGB image, apply filter to all channels
+    if current_image.mode == "RGB":
+        # Create new RGB image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGB", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                # Makes channel with highest value the only active channel
+                if red_channel > green_channel and red_channel > blue_channel:
+                    red_channel = 255
+                    green_channel = 0
+                    blue_channel = 0
+                elif green_channel > red_channel and green_channel > blue_channel:
+                    red_channel = 0
+                    green_channel = 255
+                    blue_channel = 0
+                elif blue_channel > red_channel and blue_channel > green_channel:
+                    red_channel = 0
+                    green_channel = 0
+                    blue_channel = 255
+                else:
+                    red_channel = 255
+                    green_channel = 255
+                    blue_channel = 255
+
+                # Put modified channels into new image
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel))
+
+    # If RGBA image, apply filter to all channels except alpha
+    elif current_image.mode == "RGBA":
+        # Create new RGBA image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGBA", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel, alpha_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                # Makes channel with highest value the only active channel
+                if red_channel > green_channel and red_channel > blue_channel:
+                    red_channel = 255
+                    green_channel = 0
+                    blue_channel = 0
+                elif green_channel > red_channel and green_channel > blue_channel:
+                    red_channel = 0
+                    green_channel = 255
+                    blue_channel = 0
+                elif blue_channel > red_channel and blue_channel > green_channel:
+                    red_channel = 0
+                    green_channel = 0
+                    blue_channel = 255
+                else:
+                    red_channel = 255
+                    green_channel = 255
+                    blue_channel = 255
+
+                # Put modified channels into new image except alpha
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel, alpha_channel))
+
+    return new_image

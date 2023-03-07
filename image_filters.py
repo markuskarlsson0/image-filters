@@ -7,7 +7,7 @@ from PIL import ImageTk
 
 from image import PILImage
 from filters import (grayscale_filter, invert_filter, black_and_white_filter, sepia_filter,
-    cold_filter, warm_filter)
+    cold_filter, warm_filter, colorful_filter)
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -42,7 +42,7 @@ def change_filter(event):
             current_filter = warm_filter
             intensity_slider.config(state="disabled")
         case (6,):
-            current_filter = 'colorful'
+            current_filter = colorful_filter
             intensity_slider.config(state="disabled")
         case (7,):
             current_filter = 'lighter'
