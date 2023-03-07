@@ -1,4 +1,4 @@
-"""Image Filters v0.2.2"""
+"""Image Filters v0.3.0"""
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from multiprocessing import Pool, cpu_count
@@ -6,7 +6,7 @@ from threading import Thread
 from PIL import ImageTk
 
 from image import PILImage
-from filters import grayscale_filter, invert_filter
+from filters import grayscale_filter, invert_filter, black_and_white_filter
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -29,7 +29,7 @@ def change_filter(event):
             current_filter = invert_filter
             intensity_slider.config(state="disabled")
         case (2,):
-            current_filter = 'black_and_white'
+            current_filter = black_and_white_filter
             intensity_slider.config(state="disabled")
         case (3,):
             current_filter = 'sepia'
@@ -141,7 +141,7 @@ def open_image_button_click():
             image.resize()
             update_image_label(image.resized)
 
-            window.title(f'Image Filters v0.2.2 • {file_path}')
+            window.title(f'Image Filters v0.3.0 • {file_path}')
             save_image_button.config(state="active")
             save_image_as_button.config(state="active")
             filter_list.config(state="normal")
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # Window
     window = tk.Tk()
     window.minsize(width=960, height=720)
-    window.title('Image Filters v0.2.2')
+    window.title('Image Filters v0.3.0')
     window.wm_iconphoto(False, tk.PhotoImage(file="icon.png"))
 
     # Top frame
