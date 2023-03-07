@@ -6,7 +6,7 @@ from threading import Thread
 from PIL import ImageTk
 
 from image import PILImage
-from filters import grayscale_filter, invert_filter, black_and_white_filter
+from filters import grayscale_filter, invert_filter, black_and_white_filter, sepia_filter
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -32,7 +32,7 @@ def change_filter(event):
             current_filter = black_and_white_filter
             intensity_slider.config(state="disabled")
         case (3,):
-            current_filter = 'sepia'
+            current_filter = sepia_filter
             intensity_slider.config(state="disabled")
         case (4,):
             current_filter = 'cold'
