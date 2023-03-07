@@ -7,7 +7,7 @@ from PIL import ImageTk
 
 from image import PILImage
 from filters import (grayscale_filter, invert_filter, black_and_white_filter, sepia_filter,
-    cold_filter, warm_filter, colorful_filter, lighter_filter)
+    cold_filter, warm_filter, colorful_filter, lighter_filter, darker_filter)
 
 def update_image_label(new_image):
     """Updates the image label to a new image."""
@@ -48,13 +48,12 @@ def change_filter(event):
             current_filter = lighter_filter
             intensity_slider.config(state="active")
         case (8,):
-            current_filter = 'darker'
+            current_filter = darker_filter
             intensity_slider.config(state="active")
 
 def apply_filter_button_click():
     """Configures buttons and applies filter in a new thread."""
     filter_list.config(state="disabled")
-    # intensity_slider.config(state="disabled")
     apply_filter_button.config(state="disabled")
     apply_filter_button.config(text="Applying filter...")
     revert_one_step_button.config(state="disabled")
@@ -81,7 +80,6 @@ def apply_filter():
     update_image_label(image.resized)
 
     filter_list.config(state="normal")
-    # intensity_slider.config(state="normal")
     apply_filter_button.config(text="Apply filter")
     apply_filter_button.config(state="active")
     revert_one_step_button.config(state="active")
