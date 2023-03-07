@@ -2,7 +2,7 @@
 from PIL import Image
 
 def grayscale_filter(current_image, intensity):
-    """Converts an image to grayscale."""
+    """Makes image grayscale."""
     # This filter does not use the intensity slider
     if intensity != 1:
         return False
@@ -44,7 +44,7 @@ def grayscale_filter(current_image, intensity):
     return new_image
 
 def invert_filter(current_image, intensity):
-    """Inverts the color channels of an image."""
+    """Makes image colors inverted."""
     # This filter does not use the intensity slider
     if intensity != 1:
         return False
@@ -81,7 +81,7 @@ def invert_filter(current_image, intensity):
     return new_image
 
 def black_and_white_filter(current_image, intensity):
-    """Converts an image to black and white."""
+    """Makes image black and white."""
     # This filter does not use the intensity slider
     if intensity != 1:
         return False
@@ -141,7 +141,7 @@ def black_and_white_filter(current_image, intensity):
     return new_image
 
 def sepia_filter(current_image, intensity):
-    """Converts an image to sepia."""
+    """Makes image sepia toned."""
     # This filter does not use the intensity slider
     if intensity != 1:
         return False
@@ -199,5 +199,61 @@ def sepia_filter(current_image, intensity):
                 # Put modified channels into new image except alpha
                 new_image.putpixel((x_pixel, y_pixel),
                     (new_red_channel, new_green_channel, new_blue_channel, alpha_channel))
+
+    return new_image
+
+def cold_filter(current_image, intensity):
+    """Makes image cold toned."""
+    # This filter does not use the intensity slider
+    if intensity != 1:
+        return False
+
+    # If RGB image, apply filter to all channels
+    if current_image.mode == "RGB":
+        # Create new RGB image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGB", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                red_channel = int(red_channel * 0.9)
+                green_channel = int(green_channel * 0.9)
+                blue_channel = int(blue_channel * 1.1)
+
+                # Pixel values can't be higher than 255
+                red_channel = min(red_channel, 255)
+                green_channel = min(green_channel, 255)
+                blue_channel = min(blue_channel, 255)
+
+                # Put modified channels into new image
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel))
+
+    # If RGBA image, apply filter to all channels except alpha
+    elif current_image.mode == "RGBA":
+        # Create new RGBA image with same size as current image where changes can be saved
+        new_image = Image.new(mode="RGBA", size=current_image.size)
+
+        for x_pixel in range(current_image.width):
+            for y_pixel in range(current_image.height):
+                # Get channels of current pixel
+                red_channel, green_channel, blue_channel, alpha_channel = current_image.getpixel(
+                    (x_pixel, y_pixel))
+
+                red_channel = int(red_channel * 0.9)
+                green_channel = int(green_channel * 0.9)
+                blue_channel = int(blue_channel * 1.1)
+
+                # Pixel values can't be higher than 255
+                red_channel = min(red_channel, 255)
+                green_channel = min(green_channel, 255)
+                blue_channel = min(blue_channel, 255)
+
+                # Put modified channels into new image except alpha
+                new_image.putpixel((x_pixel, y_pixel),
+                    (red_channel, green_channel, blue_channel, alpha_channel))
 
     return new_image
