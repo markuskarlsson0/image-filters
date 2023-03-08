@@ -8,9 +8,9 @@ def grayscale_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -25,9 +25,9 @@ def grayscale_filter(current_image, intensity):
                     (average_channel, average_channel, average_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -50,9 +50,9 @@ def invert_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -64,9 +64,9 @@ def invert_filter(current_image, intensity):
                 new_image.putpixel((x_pixel, y_pixel), (green_channel, blue_channel, red_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -87,9 +87,9 @@ def black_and_white_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -113,9 +113,9 @@ def black_and_white_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -147,9 +147,9 @@ def sepia_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -174,9 +174,9 @@ def sepia_filter(current_image, intensity):
                     (new_red_channel, new_green_channel, new_blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -209,9 +209,9 @@ def cold_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -233,9 +233,9 @@ def cold_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -265,9 +265,9 @@ def warm_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -289,9 +289,9 @@ def warm_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -321,9 +321,9 @@ def colorful_filter(current_image, intensity):
         return False
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -354,9 +354,9 @@ def colorful_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -393,9 +393,9 @@ def lighter_filter(current_image, intensity):
     intensity *= 10
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -417,9 +417,9 @@ def lighter_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -447,9 +447,9 @@ def darker_filter(current_image, intensity):
     intensity *= 10
 
     # If RGB image, apply filter to all channels
-    if current_image.mode == "RGB":
+    if current_image.mode == 'RGB':
         # Create new RGB image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGB", size=current_image.size)
+        new_image = Image.new(mode='RGB', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):
@@ -471,9 +471,9 @@ def darker_filter(current_image, intensity):
                     (red_channel, green_channel, blue_channel))
 
     # If RGBA image, apply filter to all channels except alpha
-    elif current_image.mode == "RGBA":
+    elif current_image.mode == 'RGBA':
         # Create new RGBA image with same size as current image where changes can be saved
-        new_image = Image.new(mode="RGBA", size=current_image.size)
+        new_image = Image.new(mode='RGBA', size=current_image.size)
 
         for x_pixel in range(current_image.width):
             for y_pixel in range(current_image.height):

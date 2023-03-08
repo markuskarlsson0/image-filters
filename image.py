@@ -63,10 +63,10 @@ class PILImage:
 
     def merge(self):
         """Merges the current image sections into one image."""
-        if self.list[-1].mode == "RGB":
-            new_image = Image.new(mode="RGB", size=self.list[-1].size)
-        elif self.list[-1].mode == "RGBA":
-            new_image = Image.new(mode="RGBA", size=self.list[-1].size)
+        if self.list[-1].mode == 'RGB':
+            new_image = Image.new(mode='RGB', size=self.list[-1].size)
+        elif self.list[-1].mode == 'RGBA':
+            new_image = Image.new(mode='RGBA', size=self.list[-1].size)
 
         for index, new_image_section in enumerate(self.current_sections):
             new_image.paste(new_image_section, (new_image_section.width * index, 0))
