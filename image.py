@@ -14,8 +14,8 @@ class PILImage:
         """Opens an image and sets it as the current image."""
         try:
             self.list = [Image.open(image_path)]
-        except IOError:
-            raise IOError
+        except IOError as exc:
+            raise IOError from exc
         else:
             self.path = image_path
 
@@ -23,10 +23,10 @@ class PILImage:
         """Saves the current image to a path."""
         try:
             self.list[-1].save(path)
-        except IOError:
-            raise IOError
-        except ValueError:
-            raise ValueError
+        except IOError as exc:
+            raise IOError from exc
+        except ValueError as exc:
+            raise ValueError from exc
 
     def resize(self):
         """Resizes the current image to fit the image label."""
