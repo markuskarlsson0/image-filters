@@ -228,8 +228,8 @@ if __name__ == '__main__':
     bottom_center_frame = tk.Frame(bottom_frame, height=150, bg='white')
     bottom_center_frame.pack(side='left', fill='both', expand=True)
 
-    bottom_center_frame_separator_1 = ttk.Separator(bottom_center_frame, orient='vertical')
-    bottom_center_frame_separator_1.pack(side='left', fill='y')
+    bottom_center_frame_separator = ttk.Separator(bottom_center_frame, orient='vertical')
+    bottom_center_frame_separator.pack(side='left', fill='y')
 
     intensity_text = tk.Label(bottom_center_frame, text='Intensity (1)', bg='white')
     intensity_text.pack()
@@ -241,12 +241,12 @@ if __name__ == '__main__':
         state='disabled', value=1, style='TScale', command=change_intensity)
     intensity_slider.place(relx=0.5, rely=0.5, anchor='center')
 
-    bottom_center_frame_separator_2 = ttk.Separator(bottom_center_frame, orient='vertical')
-    bottom_center_frame_separator_2.pack(side='right', fill='y')
-
     # Bottom right frame
     bottom_right_frame = tk.Frame(bottom_frame)
     bottom_right_frame.pack(side='right', fill='both', expand=True)
+
+    bottom_right_frame_separator = ttk.Separator(bottom_right_frame, orient='vertical')
+    bottom_right_frame_separator.pack(side='left', fill='y')
 
     bottom_right_top_frame = tk.Frame(bottom_right_frame, bg='white')
     bottom_right_top_frame.pack(side='top', fill='both', expand=True)
