@@ -16,12 +16,13 @@ def update_image_label(new_image):
     image_label.config(image=image_tk)
 
 def change_filter():
-    """Changes the current filter to the selected one in the listbox."""
+    """Changes the current filter to the selected one in the filter list."""
     global current_filter
 
     intensity_slider.set(1)
     apply_filter_button.config(state='active')
 
+    # Check filter list selection and set current filter
     match filter_list.selection():
         case ('I001',):
             current_filter = grayscale_filter
@@ -52,13 +53,13 @@ def change_filter():
             intensity_slider.config(state='active')
 
 def change_intensity(event):
-    """Limits the intensity slider to integer values."""
+    """Limits the intensity slider to integer values and updates text."""
     value = int(float(event))
     intensity_slider.config(value=value)
     intensity_text.config(text=f'Intensity ({value})')
 
 def apply_filter_button_click():
-    """Configures buttons and applies filter in a new thread."""
+    """Disables buttons and applies filter to image."""
     filter_list.config(selectmode='none')
     apply_filter_button.config(state='disabled')
     apply_filter_button.config(text='Applying filter...')
@@ -67,25 +68,32 @@ def apply_filter_button_click():
     open_image_button.config(state='disabled')
     save_image_button.config(state='disabled')
     save_image_as_button.config(state='disabled')
+
+    # Starts status bar animation
     status_bar.start(10)
 
-    # Runs filter application in a new thread to allow changes to the GUI
+    # Runs filter application process in a new thread to allow changes to the GUI
     thread = Thread(target=apply_filter)
     thread.start()
 
 def apply_filter():
     """Applies the selected filter to the current image."""
     image_sections = []
+
+    # Adds image sections to list with the intensity value
     for section in image.current_sections:
         image_sections.append((section, intensity_slider.get()))
 
+    # Applies filter to each image section in parallel using multiprocessing
     with Pool(image.section_count) as pool:
         image.current_sections = pool.starmap(current_filter, image_sections)
 
+    # Merges image sections to full image and resizes and updates label image
     image.merge()
     image.resize()
     update_image_label(image.resized)
 
+    # Enables buttons
     filter_list.config(selectmode='browse')
     apply_filter_button.config(text='Apply filter')
     apply_filter_button.config(state='active')
@@ -94,16 +102,24 @@ def apply_filter():
     open_image_button.config(state='active')
     save_image_button.config(state='active')
     save_image_as_button.config(state='active')
+
+    # Stops status bar animation
     status_bar.stop()
 
 def revert_one_step_button_click():
     """Reverts the current image to the last image."""
+    # If current image is not original image, revert to last image
     if len(image.list) >= 1:
         image.list.pop()
+
+        # Divides image into sections
         image.crop()
+
+        # Resizes image and updates image label
         image.resize()
         update_image_label(image.resized)
 
+        # If current image is original image, disable revert buttons
         if len(image.list) == 1:
             revert_one_step_button.config(state='disabled')
             revert_to_original_button.config(state='disabled')
@@ -112,15 +128,19 @@ def revert_to_original_button_click():
     """Reverts the current image to the original image."""
     image.list = [image.list[0]]
 
+    # Divides image into sections
     image.crop()
+
+    # Resizes image and updates image label
     image.resize()
     update_image_label(image.resized)
 
+    # Disables revert buttons
     revert_one_step_button.config(state='disabled')
     revert_to_original_button.config(state='disabled')
 
 def open_image_button_click():
-    """Opens an image and sets it as the current image."""
+    """Opens filedialog for image and sets it as the current image."""
     file_path = filedialog.askopenfilename(filetypes = (
         ('PNG (transparency support)', '*.png'),
             ('JPG (no transparency support)', '*.jpg')))
@@ -128,10 +148,12 @@ def open_image_button_click():
     if file_path != '':
         global image
 
+        # Checks if file is an image
         try:
             image = PILImage()
             image.open(file_path)
         except IOError:
+            # If file is not an image, show error message
             messagebox.showerror(
                 'File error', f'The selected file ({file_path}) is not an image.')
         else:
@@ -141,10 +163,14 @@ def open_image_button_click():
             else:
                 image.section_count = image.list[-1].width
 
+            # Divides image into sections
             image.crop()
             image.resize()
+
+            # Resizes image and updates image label
             update_image_label(image.resized)
 
+            # Configures GUI
             window.title(f'Image Filters v0.3.0 • {file_path}')
             image_label.place(relx=0.5, rely=0.5, anchor='center')
             save_image_button.config(state='active')
@@ -153,6 +179,7 @@ def open_image_button_click():
 
 def save_image_button_click():
     """Saves the image to the path it was opened from."""
+    # Try to save image, if it fails, show error message
     try:
         image.save(image.path)
     except IOError:
@@ -164,13 +191,14 @@ def save_image_button_click():
                 it does not have a valid filename.')
 
 def save_image_as_button_click():
-    """Saves the image to a new path."""
+    """Opens filedialog and saves the image to selected path."""
     file_path = filedialog.asksaveasfilename(
         filetypes = (('PNG (transparency support)', '*.png'),
             ('JPG (no transparency support)', '*.jpg'),
                 ('All', '*')), defaultextension='.png')
 
     if file_path != '':
+        # Try to save image, if it fails, show error message
         try:
             image.save(file_path)
         except IOError:
@@ -182,10 +210,12 @@ def save_image_as_button_click():
                     it does not have a valid filename.')
 
 if __name__ == '__main__':
+    # Creates image object and global variables
     image = PILImage()
     image_tk = None
     current_filter = None
 
+    # GUI
     # Window
     window = tk.Tk()
     window.minsize(width=960, height=720)
@@ -221,7 +251,6 @@ if __name__ == '__main__':
     filter_list.insert('', 'end', text='Lighter (1-10)')
     filter_list.insert('', 'end', text='Darker (1-10)')
     filter_list.bind('<<TreeviewSelect>>', lambda event: change_filter())
-
     filter_list.pack()
 
     # Bottom center frame
@@ -234,6 +263,7 @@ if __name__ == '__main__':
     intensity_text = tk.Label(bottom_center_frame, text='Intensity (1)', bg='white')
     intensity_text.pack()
 
+    # Style for intensity slider
     style = ttk.Style()
     style.configure('TScale', background='white')
 
@@ -248,18 +278,18 @@ if __name__ == '__main__':
     bottom_right_frame_separator = ttk.Separator(bottom_right_frame, orient='vertical')
     bottom_right_frame_separator.pack(side='left', fill='y')
 
+    # Bottom right top frame
     bottom_right_top_frame = tk.Frame(bottom_right_frame, bg='white')
     bottom_right_top_frame.pack(side='top', fill='both', expand=True)
-
-    bottom_right_bottom_frame = tk.Frame(bottom_right_frame, bg='white')
-    bottom_right_bottom_frame.pack(side='bottom', fill='both')
 
     options_text = tk.Label(bottom_right_top_frame, text='Options', bg='white')
     options_text.pack()
 
+    # Bottom right top left frame
     bottom_right_top_left_frame = tk.Frame(bottom_right_top_frame, bg='white')
     bottom_right_top_left_frame.place(relx=0.15, rely=0.5, anchor='w')
 
+    # Style for buttons
     style.configure('Custom.TButton', background='white')
 
     apply_filter_button = ttk.Button(bottom_right_top_left_frame, text='Apply filter',
@@ -274,6 +304,7 @@ if __name__ == '__main__':
         command=revert_to_original_button_click, style='Custom.TButton', state='disabled')
     revert_to_original_button.pack()
 
+    # Bottom right top right frame
     bottom_rigth_top_right_frame = tk.Frame(bottom_right_top_frame, bg='white')
     bottom_rigth_top_right_frame.place(relx=0.85, rely=0.5, anchor='e')
 
@@ -288,6 +319,10 @@ if __name__ == '__main__':
     save_image_as_button = ttk.Button(bottom_rigth_top_right_frame, text='Save image as...',
         command=save_image_as_button_click, style='Custom.TButton', state='disabled')
     save_image_as_button.pack()
+
+    # Bottom right bottom frame
+    bottom_right_bottom_frame = tk.Frame(bottom_right_frame, bg='white')
+    bottom_right_bottom_frame.pack(side='bottom', fill='both')
 
     status_text = tk.Label(bottom_right_bottom_frame, text='Status', bg='white')
     status_text.pack()

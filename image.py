@@ -12,6 +12,7 @@ class PILImage:
 
     def open(self, image_path):
         """Opens an image and sets it as the current image."""
+        # Try to open image and add it to list, if it fails, raise an error.
         try:
             self.list = [Image.open(image_path)]
         except IOError as exc:
@@ -21,6 +22,7 @@ class PILImage:
 
     def save(self, path):
         """Saves the current image to a path."""
+        # Try to save current image, if it fails, raise an error.
         try:
             self.list[-1].save(path)
         except IOError as exc:
@@ -33,17 +35,40 @@ class PILImage:
         image_max_width = 900
         image_max_height = 500
 
+        # If image is wider than the max image label width,
+        # resize it to the max width while keeping aspect ratio.
         if self.list[-1].width > image_max_width:
             image_width = image_max_width
             image_height = int(self.list[-1].height * image_max_width / self.list[-1].width)
 
+            # If image now is taller than the max image label height,
+            # resize it to the max height while keeping aspect ratio.
             if image_height > image_max_height:
                 image_height = image_max_height
                 image_width = int(self.list[-1].width * image_max_height / self.list[-1].height)
+
+        # If image is taller than the max image label height,
+        # resize it to the max height while keeping aspect ratio.
+        elif self.list[-1].height > image_max_height:
+            image_height = image_max_height
+            image_width = int(self.list[-1].width * image_max_height / self.list[-1].height)
+
+            # If image now is wider than the max image label width,
+            # resize it to the max width while keeping aspect ratio.
+            if image_width > image_max_width:
+                image_width = image_max_width
+                image_height = int(self.list[-1].height * image_max_width / self.list[-1].width)
+
+        # If image fits in image label max dimensions
         else:
             image_width = self.list[-1].width
             image_height = self.list[-1].height
 
+        # Image dimensions can't be 0
+        image_width = max(image_width, 1)
+        image_height = max(image_height, 1)
+
+        # Resizes image
         self.resized = self.list[-1].resize((image_width, image_height))
 
     def crop(self):
