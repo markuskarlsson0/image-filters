@@ -187,8 +187,8 @@ def save_image_button_click():
             f'The image could not be saved at path: {image.path}.')
     except ValueError:
         messagebox.showerror('Image save error',
-            'The image could not be saved since \
-                it does not have a valid filename.')
+            'The image could not be saved since ' \
+                'it does not have a valid filename.')
 
 def save_image_as_button_click():
     """Opens filedialog and saves the image to selected path."""
@@ -206,8 +206,8 @@ def save_image_as_button_click():
                 f'The image could not be saved at path: {file_path}.')
         except ValueError:
             messagebox.showerror('Image save error',
-                'The image could not be saved since \
-                    it does not have a valid filename.')
+                'The image could not be saved since ' \
+                    'it does not have a valid filename.')
 
 if __name__ == '__main__':
     # Creates image object and global variables
