@@ -74,12 +74,18 @@ class PILImage:
     def crop(self):
         """Crops the current image into sections."""
         image_sections = []
+
+        # Get the width of all sections except last one
         image_section_width = self.list[-1].width // self.section_count
 
+        # Crop image into sections and add them to list (except last one)
         for index in range(0, self.section_count - 1):
             image_sections.append(self.list[-1].crop((image_section_width * index, 0,
                 image_section_width * (index + 1), self.list[-1].height)))
 
+        # If the image width is not divisible by the section count,
+        # last section will not be as wide as the others.
+        # We therefore crop the last section separately.
         image_sections.append(self.list[-1].crop(
             (image_section_width * (self.section_count - 1), 0,
             self.list[-1].width, self.list[-1].height)))
@@ -88,14 +94,18 @@ class PILImage:
 
     def merge(self):
         """Merges the current image sections into one image."""
+        # Create new image with same mode and size as current image
         if self.list[-1].mode == 'RGB':
             new_image = Image.new(mode='RGB', size=self.list[-1].size)
         elif self.list[-1].mode == 'RGBA':
             new_image = Image.new(mode='RGBA', size=self.list[-1].size)
 
+        # Paste all sections into new image (except last one)
         for index, new_image_section in enumerate(self.current_sections):
             new_image.paste(new_image_section, (new_image_section.width * index, 0))
 
+        # Paste last section into new image separately,
+        # as it might not be the same width as the other sections
         current_sections_length = len(self.current_sections) - 1
         new_image.paste(self.current_sections[current_sections_length],
             (self.current_sections[0].width * current_sections_length, 0))

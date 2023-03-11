@@ -1,4 +1,4 @@
-"""Image Filters v0.3.0"""
+"""Image Filters v1.0.0"""
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from multiprocessing import Pool, cpu_count
@@ -165,13 +165,13 @@ def open_image_button_click():
 
             # Divides image into sections
             image.crop()
-            image.resize()
 
             # Resizes image and updates image label
+            image.resize()
             update_image_label(image.resized)
 
             # Configures GUI
-            window.title(f'Image Filters v0.3.0 • {file_path}')
+            window.title(f'Image Filters v1.0.0 • {file_path}')
             image_label.place(relx=0.5, rely=0.5, anchor='center')
             save_image_button.config(state='active')
             save_image_as_button.config(state='active')
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     # Window
     window = tk.Tk()
     window.minsize(width=960, height=720)
-    window.title('Image Filters v0.3.0')
+    window.title('Image Filters v1.0.0')
     window.wm_iconphoto(False, tk.PhotoImage(file='icon.png'))
 
     # Top frame
